@@ -2,6 +2,7 @@ import pika
 import time
 import random
 import datetime
+import json
 from constants import SERVICES_LIST, SEVERITY
 
 # rabbitmq uri
@@ -19,8 +20,6 @@ def generate_log():
     message = f"{timestamp} {service_name} {severity} Log message generated"
     routing_key = f"{service_name}.{severity}"
     return routing_key, message
-
-
 
 def send_logs():
     channel, connection = get_rabbitmq_channel()

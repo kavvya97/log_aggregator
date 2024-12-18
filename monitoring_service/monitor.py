@@ -17,18 +17,19 @@ def connect_to_rabbitmq():
     # bind Queues to exchange
     channel.queue_bind(constants.QUEUE_NAME, 
                        exchange=constants.EXCHANGE_NAME, 
-                       routing_key="*.error")
+                       routing_key="*.Error")
     channel.queue_bind(constants.QUEUE_NAME, 
                        exchange=constants.EXCHANGE_NAME, 
-                       routing_key="*.warn")
+                       routing_key="*.Warn")
     return channel
 
 def process_log_message(ch, method, properties, body):
-    log_data = json.loads(body.decode())
-    timestamp = log_data.get("timestamp")
-    service_name = log_data.get("service_name")
-    severity = log_data.get("severity")
-    message = log_data.get("log")
+    log_data = body.decode()
+    parts = log_data.split(" ", 3)
+    timestamp = f"{parts[0]} {parts[1]}"
+    service_name = parts[2]
+    severity = parts[3].split(" ", 1)[0]
+    message = parts[3].split(" ", 1)[1]
 
     print(f"[{timestamp}] [{service_name}] [{severity.upper()}] {message}")
 
@@ -49,6 +50,7 @@ def check_error_threshold():
     
 def start_monitoring():
     channel = connect_to_rabbitmq()
+    print("starting to monitor")
     channel.basic_consume(queue=constants.QUEUE_NAME, on_message_callback=process_log_message, auto_ack=True)
     channel.start_consuming()
 

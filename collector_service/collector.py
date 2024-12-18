@@ -12,10 +12,25 @@ client = MongoClient(MONGO_URI)
 db = client[constants.DB_NAME]
 logs_collection = db[constants.COLLECTION_NAME] 
     
+
+def parse_log_message(message):
+    try:
+        parts = message.split(" ", 3)
+        return {
+            "timestamp": f"{parts[0]} {parts[1]}",
+            "service": parts[2],
+            "severity": parts[3].split(" ", 1)[0],
+            "message": parts[3].split(" ", 1)[1]
+        }
+    except (IndexError, ValueError) as e:
+        print(f"Failed to parse log message: {message}, error: {e}")
+        return None
+
 def store_raw_logs(ch, method, properties, body):
     try:
-        log_message = json.loads(body.decode())
-        logs_collection.insertOne(log_message)
+        log_message = body.decode("utf-8")
+        parsed_log_message = parse_log_message(log_message)
+        logs_collection.insert_one(parsed_log_message)
         print("Log stored successfully in MongoDB.")
         ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
