@@ -15,6 +15,10 @@ By employing a message queue, the publisher is isolated from the consumers. The 
 
 
 ## Architecture Overview
+<br>
+
+
+![log_aggregator System Architecture](Files/arch_diag.png)
 
 The log aggregator consists of the following key components:
 
