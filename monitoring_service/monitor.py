@@ -1,13 +1,14 @@
 import pika
 import time
 import constants
-import json
+import os
 from collections import deque
 
+RABBITMQ_URI = os.getenv("RABBITMQ_URI", constants.RABBITMQ_URI)
 error_log_window = deque()
 
 def connect_to_rabbitmq():
-    connection = pika.BlockingConnection(pika.URLParameters(constants.RABBITMQ_URI))
+    connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URI))
     channel = connection.channel()
 
     # declare queues and exchanges

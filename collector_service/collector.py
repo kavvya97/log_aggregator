@@ -8,6 +8,7 @@ import constants
 import json
 
 MONGO_URI = os.getenv("MONGO_URI", constants.MONGO_URL)
+RABBITMQ_URI = os.getenv("RABBITMQ_URI", constants.RABBITMQ_URI)
 client = MongoClient(MONGO_URI)
 db = client[constants.DB_NAME]
 logs_collection = db[constants.COLLECTION_NAME] 
@@ -38,7 +39,7 @@ def store_raw_logs(ch, method, properties, body):
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
 def collect_logs():
-    connection = pika.BlockingConnection(pika.URLParameters(constants.RABBITMQ_URI))
+    connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URI))
     channel = connection.channel()
 
     # Declare exchange and queues

@@ -5,9 +5,10 @@ services:
     build:
       context: ./source_service
     depends_on:
-      - mongodb
+      - rabbitmq
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/log_aggregator
+      - MONGO_URI=mongodb://mongodb:27017
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
     networks:
       - lognet
 
@@ -16,8 +17,10 @@ services:
       context: ./collector_service
     depends_on:
       - mongodb
+      - rabbitmq
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/log_aggregator
+      - MONGO_URI=mongodb://mongodb:27017
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
     networks:
       - lognet
 
@@ -26,8 +29,10 @@ services:
       context: ./monitoring_service
     depends_on:
       - mongodb
+      - rabbitmq
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/log_aggregator
+      - MONGO_URI=mongodb://mongodb:27017
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
     networks:
       - lognet
 
@@ -37,7 +42,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/log_aggregator
+      - MONGO_URI=mongodb://mongodb:27017
     ports:
       - "5000:5000"
     networks:
@@ -60,6 +65,15 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - lognet
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    
+      - "15672:15672"  
     networks:
       - lognet
 

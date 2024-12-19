@@ -1,12 +1,14 @@
 import pika
+import os
 import time
 import random
 import datetime
-import json
-from constants import SERVICES_LIST, SEVERITY
+from constants import SERVICES_LIST, SEVERITY, RABBITMQ_URI
 
 # rabbitmq uri
-RABBITMQ_URI = "amqp://guest:guest@localhost:5672/"
+RABBITMQ_URI = os.getenv("RABBITMQ_URI", RABBITMQ_URI)
+
+
 
 def get_rabbitmq_channel():
     connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URI))
