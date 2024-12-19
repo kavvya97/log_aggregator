@@ -1,35 +1,39 @@
-# log_aggregator
+# Log Aggregator
+
+<p align="center">
+A distributed message-based Log aggregator developed with Python, RabbitMQ, Flask, and MongoDB.  
+A Log Aggregator enables you to gather logs from disparate sources into a single system for search, analysis, and actionable insights.
+</p>
+
+## Architecture Overview
+
+The log aggregator consists of the following key components:
+
+1. **Log Sources**: 
+   - Services generate logs in the format: `<timestamp> <service_name> <severity> <log_message>`.
+   - Publishes logs to RabbitMQ with routing keys based on log severity and service name.
+
+2. **RabbitMQ Exchange**:
+   - Configured for topic-based routing.
+   - Routes logs to appropriate queues: `LogQueue` (for storage) and `MonitoringQueue` (for real-time analysis).
+
+3. **Log Collector Service**:
+   - Consumes logs from `LogQueue` and stores them in MongoDB.
+
+4. **Monitoring Service**:
+   - Consumes logs from `MonitoringQueue` and performs real-time analysis.
+   - Detects high error rates and triggers alerts.
+
+5. **Log Search Service**:
+   - Provides  RESTful APIs to query logs in mongodb based on parameters like severity and severity
+
+6. **Log Retention Scheduler**:
+   - Periodically removes logs older than 10 days from database to maintain storage efficiency.
 
 
-Service/Request flow: 
-- Log sources
-  - Different service, generate independent logs. These can include error logs, access logs, info logs and debug-level logs.
-  Log format: <timestamp> <service_name> <severity> <log> 
-  - Each source pushes logs into rabbitmq Exchange, producer that is responsible for sending the logs messges
-- Rabbitmq Exchange
-  - The Exchange is configured for Topic-based routing. Logs are published to RabbitMQ with a routing key that identifies the type or severity of the log. For example:
-    - ServiceA.error  "some error log"
-    - ServiceB.info  "some warning log"
-  - distributes this log into multiple queues based on routing key
-  - 2 main queues: LogQueue(for raw logs) and MonitoringQueue(Real-time analysis)
-- Log collector service
-  - consumer of LogQueue.
-  - collects all raw log and stores them in MongoDb
-- Monitoring service
-  - consumer of MonitoringQueue
-  - processes specific logs such as error and info and performs real-time processing
-- LogSearch Service  
-    - supports restAPI to search and filter logs based on params
-      - severity(error, info, warning)
-      - source(service A, B, C)
-      - Time range
-    - Query the logs stored in MongoDB or indexed files (utilizing elastic search)
-- AlertService
-  - Consumer of MonitoringQueue
-  - Detect specific conditions in real-time logs(more than 10 errors in last minute)
-- LogRetention Scheduler
-  - background task/Cron Job which automatically filters logs which are very old(based on TTL value)
+## Installation and Setup
 
-
-
-Features to be implemented
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-repo/log_aggregator.git
+   cd log_aggregator
