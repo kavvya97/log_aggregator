@@ -44,7 +44,7 @@ The log aggregator consists of the following key components:
    - Periodically removes logs older than 10 days from database to maintain storage efficiency.
 
 ## Getting Started with Docker
-If you have Docker installed in your computer, you do not need to have Python, RabbitMQ or MongoDB installed. You can run the application with a single command:
+If you have Docker installed in your computer, you do not need to have Python, RabbitMQ or MongoDB installed. You can run all the application with a single command:
   ```bash
   $ docker-compose up
   ```
@@ -52,5 +52,15 @@ To scale each component independently, use:
   ```bash
   $ docker-compose up --scale <service-name>=<number-of-containers>
   ```
+## Getting Started without Docker
+if you do not have docker, you would have to install each of these applications independently and run them. Assuming that you have RabbitMQ and MongoDB running, you would have to open each service, create a virtual environment to install all the required dependencies and then you can start the service. To scale your microservices, you can always spin multiple instances of your microservice in different terminals. 
+```bash
+$ cd source_service
+$ python -m venv env
+$ source env/bin/activate
+$ pip install -r requirements.txt
+$ python source.py
+```
+
 
 
